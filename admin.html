@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — PSUTOffices</title>
+    <meta name="description" content="Manage faculty office listings in the PSUTOffices Directory.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Animated background -->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <span class="logo-icon">🏛️</span>
+                <span class="logo-text">PSUT<strong>Offices</strong></span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Directory</a>
+                <a href="admin.html" class="nav-link active">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===================== LOGIN GATE ===================== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-icon">🔐</div>
+            <h2>Admin Login</h2>
+            <p class="login-subtitle">Enter your credentials to access the admin panel</p>
+            <div class="form-group">
+                <label for="loginUser">Username</label>
+                <input type="text" id="loginUser" placeholder="Username" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="loginPass">Password</label>
+                <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
+            </div>
+            <div class="login-error" id="loginError" style="display:none;">Invalid username or password</div>
+            <button class="btn btn-primary login-btn" id="btnLogin">🔓 Log In</button>
+        </div>
+    </div>
+
+    <!-- ===================== ADMIN CONTENT (hidden until login) ===================== -->
+    <div id="adminContent" style="display:none;">
+
+        <!-- Hero -->
+        <header class="admin-hero">
+            <h1>Admin <span class="gradient-text">Panel</span></h1>
+            <p>Add, edit, and remove faculty office listings</p>
+        </header>
+
+        <!-- Toast container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Main admin layout -->
+        <section class="admin-section">
+            <div class="container">
+                <div class="admin-layout">
+
+                    <!-- Left: Form -->
+                    <div class="form-panel" id="formPanel">
+                        <h2><span>📝</span> <span id="formTitle">Add Faculty</span></h2>
+                        <input type="hidden" id="editId">
+
+                        <div class="form-group">
+                            <label for="fName">Full Name</label>
+                            <input type="text" id="fName" placeholder="e.g. Dr. Sarah Mitchell">
+                        </div>
+                        <div class="form-group">
+                            <label for="fTitle">Title / Position</label>
+                            <input type="text" id="fTitle" placeholder="e.g. Professor">
+                        </div>
+                        <div class="form-group">
+                            <label for="fDepartment">Department</label>
+                            <input type="text" id="fDepartment" placeholder="e.g. Electrical Engineering">
+                        </div>
+                        <div class="form-group">
+                            <label for="fSchool">School</label>
+                            <select id="fSchool">
+                                <option value="">Select school…</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Sciences">Sciences</option>
+                                <option value="Arts">Arts</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fOffice">Office Number</label>
+                            <input type="text" id="fOffice" placeholder="e.g. IT-312">
+                        </div>
+                        <div class="form-group">
+                            <label for="fFloor">Floor</label>
+                            <input type="number" id="fFloor" min="0" max="50" placeholder="e.g. 3">
+                        </div>
+                        <div class="form-group">
+                            <label for="fBuilding">Building</label>
+                            <input type="text" id="fBuilding" placeholder="e.g. Tech Center">
+                        </div>
+                        <div class="form-group">
+                            <label for="fEmail">Email</label>
+                            <input type="email" id="fEmail" placeholder="e.g. s.mitchell@psut.edu.jo">
+                        </div>
+                        <div class="form-group">
+                            <label for="fHours">Office Hours</label>
+                            <input type="text" id="fHours" placeholder="e.g. Mon & Wed 10:00–12:00">
+                        </div>
+
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="btnSave">💾 Save</button>
+                            <button class="btn btn-secondary" id="btnCancel" style="display:none;">Cancel</button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Table -->
+                    <div class="table-panel">
+                        <div class="table-header">
+                            <h2><span>📋</span> Faculty List</h2>
+                            <span class="table-count" id="tableCount"></span>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>School</th>
+                                        <th>Office</th>
+                                        <th>Floor</th>
+                                        <th>Email</th>
+                                        <th style="width:90px">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2026 PSUTOffices &mdash; Admin Panel</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>
