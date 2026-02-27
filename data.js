@@ -1,7 +1,17 @@
 /* =============================================
    DATA — PSUTOffices Faculty Directory
-   Stored in localStorage so admin edits persist.
+   Integrated with Gun.js for Zero-Config Real-time Sync
    ============================================= */
+
+// Gun.js initialization (using public relay peers)
+const gun = typeof Gun !== 'undefined' ? Gun([
+    'https://gun-manhattan.herokuapp.com/gun',
+    'https://gun-us.herokuapp.com/gun',
+    'https://gun-eu.herokuapp.com/gun'
+]) : null;
+
+// Unique "Secret Key" for your data - change this to something unique if you want a private instance
+const DATA_KEY = 'psut_offices_shared_data_v1';
 
 const DEFAULT_FACULTY = [
     {
@@ -188,31 +198,47 @@ const DEFAULT_FACULTY = [
 
 // ---- Data access helpers ----
 
-// Version key to force refresh when schema changes
-const DATA_VERSION = 'psutoffices_v2';
-
+// Function to fetch faculty once (initial load)
 function getFaculty() {
-    const version = localStorage.getItem('psutoffices_version');
-    if (version === DATA_VERSION) {
-        const stored = localStorage.getItem('psutoffices_faculty');
-        if (stored) {
-            try { return JSON.parse(stored); } catch (e) { /* fall through */ }
-        }
+    const stored = localStorage.getItem('psutoffices_faculty');
+    if (stored) {
+        try { return JSON.parse(stored); } catch (e) { /* fall through */ }
     }
-    // First load or schema change: seed with defaults
-    saveFaculty(DEFAULT_FACULTY);
-    localStorage.setItem('psutoffices_version', DATA_VERSION);
     return [...DEFAULT_FACULTY];
 }
 
+// Function to save faculty to Gun.js & localStorage
 function saveFaculty(data) {
+    // Update local storage for immediate cache
     localStorage.setItem('psutoffices_faculty', JSON.stringify(data));
+
+    // Update Gun.js Shared Graph
+    if (gun) {
+        // We stringify the list to store it as a single node for simplicity, 
+        // as Gun prefers atomic updates for smaller apps
+        gun.get(DATA_KEY).put({ list: JSON.stringify(data) });
+    }
 }
 
 function getNextId(data) {
     return data.length ? Math.max(...data.map(f => f.id)) + 1 : 1;
 }
 
-// ---- Admin credentials (client-side demo) ----
+// Seed Gun.js if it's empty
+function seedDatabase() {
+    if (gun) {
+        gun.get(DATA_KEY).once(data => {
+            if (!data || !data.list) {
+                console.log("Seeding Gun.js with default records...");
+                saveFaculty(DEFAULT_FACULTY);
+            }
+        });
+    }
+}
+
+// Attempt to seed on load
+seedDatabase();
+
+// ---- Admin credentials ----
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'psut2026';

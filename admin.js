@@ -78,6 +78,19 @@
         };
 
         renderTable();
+
+        // --- Gun.js Real-time Listener (Admin Sync) ---
+        if (gun) {
+            gun.get(DATA_KEY).on((data) => {
+                if (data && data.list) {
+                    try {
+                        faculty = JSON.parse(data.list);
+                        renderTable();
+                    } catch (e) { console.error("Gun data parse error", e); }
+                }
+            });
+        }
+
         btnSave.addEventListener('click', handleSave);
         btnCancel.addEventListener('click', cancelEdit);
 

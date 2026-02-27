@@ -30,6 +30,20 @@
         buildFilterPills();
         renderView();
 
+        // --- Gun.js Real-time Listener ---
+        if (gun) {
+            gun.get(DATA_KEY).on((data) => {
+                if (data && data.list) {
+                    try {
+                        faculty = JSON.parse(data.list);
+                        // Update localStorage as a cache
+                        localStorage.setItem('psutoffices_faculty', JSON.stringify(faculty));
+                        renderView();
+                    } catch (e) { console.error("Gun data parse error", e); }
+                }
+            });
+        }
+
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim().toLowerCase();
             renderView();
